@@ -1,5 +1,5 @@
 sim_binomial = function(sample_size, ntrials, p, nsim = 1, sample_p = FALSE, mean_p = 0, sd_p = 0,
-                        sample_trials = T, mean_trial = 0, sd_trial = 0) {
+                        sample_trials = FALSE, mean_trial = 0, sd_trial = 0) {
   require(dplyr)
 
   if(sample_trials){
@@ -14,7 +14,8 @@ sim_binomial = function(sample_size, ntrials, p, nsim = 1, sample_p = FALSE, mea
       nsim = rep(1:nsim, each = sample_size),
       sample_size = sample_size,
       ntrials = ntrials,
-      p = p)
+      p = p,
+      p_sample = temp/ntrials)
   }
   else{
     sim = lapply(sample_size, function(x) { # sample size level
@@ -29,7 +30,8 @@ sim_binomial = function(sample_size, ntrials, p, nsim = 1, sample_p = FALSE, mea
           nsim = rep(1:nsim, each = x),
           sample_size = x,
           ntrials = y,
-          p = p)
+          p = p,
+          p_sample = temp/y)
       })
     })
     sim = lapply(sim, function(x){dplyr::bind_rows(x)})
