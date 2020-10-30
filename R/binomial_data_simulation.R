@@ -1,45 +1,127 @@
-sim_binomial = function(sample_size, ntrials, p, nsim = 1, sample_p = FALSE, mean_p = 0, sd_p = 0,
-                        sample_trials = FALSE, mean_trial = 0, sd_trial = 0, min_unif = 0, max_unif = 0, dist_trial = "norm") {
-  require(dplyr)
+sim_binomial <- function(sample_size, ntrials, p, nsim = 1, sample_p = FALSE, sample_trials = FALSE,
+                       dist_trial = "norm", dist_p = "norm",
+                       mean_p = 0, sd_p = 0, mean_trial = 0, sd_trial = 0, min_unif = 0, max_unif = 0){
 
-  if(sample_trials){
-    if(dist_trial == "norm"){
-      ntrials = round(rnorm(sample_size, mean_trial, sd_trial)) # get individual trials
-    }else if(dist_trial == "unif"){
-      ntrials = round(runif(sample_size, min_unif, max_unif))
-    }
-    if(sample_p){
-      p = round(rnorm(sample_size, mean_p, sd_p),2)
-    }
-    temp = as.vector(replicate(nsim, expr = rbinom(sample_size, ntrials, p)))
-    sim = data.frame(
-      id = 1:sample_size,
-      success = temp,
-      nsim = rep(1:nsim, each = sample_size),
-      sample_size = sample_size,
-      ntrials = ntrials,
-      p = p,
-      p_sample = temp/ntrials)
+# Packages
+
+require(dplyr)
+require(tidyr)
+
+# Creating Dataframe with conditions
+
+nsim <- 1:nsim
+
+if(sample_trials & !sample_p){
+
+  dat <- expand_grid(
+    sample_size,
+    p
+  )
+
+  id <- unlist(lapply(dat$sample_size, function(x) 1:x))
+
+  dat <- slice(dat, rep(1:n(), dat$sample_size))
+
+  dat$id <- id
+
+  dat <- expand_grid(
+    dat,
+    nsim
+  )
+
+  if(dist_trial == "norm"){
+    dat$ntrials <- round(rnorm(nrow(dat), mean_trial, sd_trial))
   }
-  else{
-    sim = lapply(sample_size, function(x) { # sample size level
-      if(sample_p){
-        p = rnorm(x, mean_p, sd_p)
-      }
-      lapply(ntrials, function(y) { # trials level
-        temp = as.vector(replicate(nsim, expr = rbinom(x, y, p)))
-        temp_sim = data.frame(
-          id = 1:x,
-          success = temp,
-          nsim = rep(1:nsim, each = x),
-          sample_size = x,
-          ntrials = y,
-          p = p,
-          p_sample = temp/y)
-      })
-    })
-    sim = lapply(sim, function(x){dplyr::bind_rows(x)})
-    sim = dplyr::bind_rows(sim)
+  else if(dist_trial == "unif"){
+    dat$ntrials <- round(runif(x, min_unif_trial, max_unif_trial))
   }
-  return(sim)
+
+}
+else if(sample_p & !sample_trials){
+
+  dat <- expand_grid(
+    sample_size,
+    ntrials
+  )
+
+  id <- unlist(lapply(dat$sample_size, function(x) 1:x))
+
+  dat <- slice(dat, rep(1:n(), dat$sample_size))
+
+  dat$id <- id
+
+  dat <- expand_grid(
+    dat,
+    nsim
+  )
+
+  if(dist_p == "norm"){
+    dat$p <- round(rnorm(nrow(dat), mean_p, sd_p), 3)
+  }
+  else if(dist_trial == "unif"){
+    dat$p <- round(runif(x, min_unif_p, max_unif_p), 3)
+  }
+}
+
+else if(sample_trials & sample_p){
+
+  dat <- expand_grid(
+    sample_size,
+    nsim
+  )
+
+  id <- unlist(lapply(dat$sample_size, function(x) 1:x))
+
+  dat <- slice(dat, rep(1:n(), dat$sample_size))
+
+  dat$id <- id
+
+  if(dist_trial == "norm"){
+    dat$ntrials <- round(rnorm(nrow(dat), mean_trial, sd_trial))
+  }
+  else if(dist_trial == "unif"){
+    dat$ntrials <- round(runif(x, min_unif_trial, max_unif_trial))
+  }
+
+  if(dist_p == "norm"){
+    dat$p <- round(rnorm(nrow(dat), mean_p, sd_p), 3)
+  }
+  else if(dist_p == "unif"){
+    dat$p <- round(runif(x, min_unif_p, max_unif_p), 3)
+  }
+}
+
+else if(!sample_trials & !sample_p){
+
+    dat <- expand_grid(
+      sample_size,
+      p,
+      ntrials,
+      nsim
+    )
+
+    id <- unlist(lapply(dat$sample_size, function(x) 1:x))
+
+    dat <- slice(dat, rep(1:n(), dat$sample_size))
+
+    dat$id <- id
+
+  }
+
+  # Simulating Binomial Data
+
+  dat$success <- mapply(function(x, y) rbinom(1, x, y), dat$ntrials, dat$p)
+
+  # Cleaning dataset
+
+  dat %>%
+    mutate(fail = ntrials - success,
+           p_sample = success/ntrials,
+           q_sample = fail/ntrials) %>%
+    select(id, sample_size, ntrials, p, success, fail, p_sample, q_sample, nsim) -> dat
+
+  # Returning
+
+  return(dat)
+
 }
