@@ -1,9 +1,13 @@
 sim_binomial = function(sample_size, ntrials, p, nsim = 1, sample_p = FALSE, mean_p = 0, sd_p = 0,
-                        sample_trials = FALSE, mean_trial = 0, sd_trial = 0) {
+                        sample_trials = FALSE, mean_trial = 0, sd_trial = 0, min_unif = 0, max_unif = 0, dist_trial = "norm") {
   require(dplyr)
 
   if(sample_trials){
-    ntrials = round(rnorm(sample_size, mean_trial, sd_trial)) # get individual trials
+    if(dist_trial == "norm"){
+      ntrials = round(rnorm(sample_size, mean_trial, sd_trial)) # get individual trials
+    }else if(dist_trial == "unif"){
+      ntrials = round(runif(sample_size, min_unif, max_unif))
+    }
     if(sample_p){
       p = round(rnorm(sample_size, mean_p, sd_p),2)
     }
