@@ -2,11 +2,6 @@ sim_binomial <- function(sample_size, ntrials, p, nsim = 1, sample_p = FALSE, sa
                        dist_trial = "norm", dist_p = "norm",
                        mean_p = 0, sd_p = 0, mean_trial = 0, sd_trial = 0, min_unif = 0, max_unif = 0){
 
-# Packages
-
-require(dplyr)
-require(tidyr)
-
 # Creating Dataframe with conditions
 
 nsim <- 1:nsim
