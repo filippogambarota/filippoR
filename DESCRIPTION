@@ -1,12 +1,11 @@
 Package: filippoR
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Personal collection of useful functions
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Filippo Gambarota
+Maintainer: Filippo Gambarota <filipppo.gambarota@gmailc.om>
+Description: All personal functions or adaptation from other packages useful for my daily work
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Depends: dplyr, tidyr
+Depends: dplyr, tidyr, data.table, dtplyr
