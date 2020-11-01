@@ -1,7 +1,5 @@
 p_change_lmer <- function(fit, group_factor){
 
-  group_factor_tidy <- eval(str2expression(group_factor)) # for the filter evaluation
-
   dat <- fit@frame # get the dataframe
 
   fit <- as_lmerModLmerTest(fit) # refit for having p-value from lmerTest
@@ -22,9 +20,11 @@ p_change_lmer <- function(fit, group_factor){
     suppressMessages(update(fit, data = x)) # broom for better models
   })
 
+  fit_list$full_model <- fit #adding the full model
+
   # Getting warnings
 
-  singular_fit <- sapply(fit_list, function(x) isSingular(x))
+  singular_fit <- lapply(fit_list, function(x) isSingular(x))
 
   # Extract all models info with broom
 
@@ -34,11 +34,11 @@ p_change_lmer <- function(fit, group_factor){
       select(effect, term, estimate, std.error, statistic, df, p.value)
   })
 
-  #adding the full model
+  # Adding singularity warn
 
-  fit_list$full_model <- tidy(fit) %>%
-    filter(effect == "fixed") %>%
-    select(effect, term, estimate, std.error, statistic, df, p.value)
+  for(i in 1:length(fit_list)){
+    fit_list[[i]]$singular_fit <- singular_fit[[i]]
+  }
 
   # Final dataset
 
