@@ -1,12 +1,12 @@
 dfbeta_plot <- function(infl, cutoff = "default", only_critic = TRUE){
 
-  if(cutoff == "default"){
-    cutoff <- 2/sqrt(n_group)
-  }
-
   infl <- filter(infl, measure == "dfbeta")
 
   n_group <- nrow(unique(infl[ ,1]))
+
+  if(cutoff == "default"){
+    cutoff <- 2/sqrt(n_group)
+  }
 
   group_factor <- colnames(infl)[1]
 
