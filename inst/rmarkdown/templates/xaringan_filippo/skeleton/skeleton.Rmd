@@ -1,0 +1,52 @@
+---
+title: "Filippo Template Xaringan"
+author: "Filippo Gambarota"
+institute: "University of Padova - @Evento"
+date: "00/00/0000"
+output:
+  xaringan::moon_reader:
+    css: ["resources/xaringan_filippo.css", "default-fonts"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '16:9'
+params:
+  pdf_button: TRUE
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(echo = T, fig.align = "center")
+
+# File name Setup
+
+filename = stringr::str_replace(knitr::current_input(), ".Rmd", "")
+
+# Packages
+
+```
+
+class: inverse, center, middle
+
+<br/>
+
+### .large[[filippo.gambarota@phd.unipd.it](mailto:filippo.gambarota@phd.unipd.it)]
+
+`r icon::fa_twitter()` [@fgambarota](https://twitter.com/fgambarota)  
+
+`r icon::fa_github()` [filippogambarota](https://github.com/filippogambarota)
+
+<br/>
+
+```{r, eval=params$pdf_button, results='asis', echo=FALSE}
+glue::glue(".tiny[[Download PDF slides]({file}.pdf)]", file = filename)
+```
+
+
+```{r echo=FALSE, out.width=350}
+knitr::include_graphics("img/final_logo.svg")
+```
+
+.tiny[Slides made with the [Xaringan](https://github.com/yihui/xaringan) package by [Yihui Xie](https://yihui.name/)]
